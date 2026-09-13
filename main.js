@@ -4,30 +4,20 @@ const list = document.querySelector("#bookmarkList");
 
 const bookmarks = [];
 
+const createBookmarksMarkup = (bookmarks) => {
+  return bookmarks
+    .map(
+      (bookmark, index) =>
+        `<li data-id="${index}">
+          <a href="${bookmark}" target="_blank">${bookmark}</a>
+          <button class="delete-btn">X</button>
+        </li>`,
+    )
+    .join("");
+};
+
 const addBookmarksToHtml = () => {
-  inputEl.value = "";
-
-  list.innerHTML = "";
-
-  for (let i = 0; i < bookmarks.length; i += 1) {
-    const item = document.createElement("li");
-    const link = document.createElement("a");
-    link.href = bookmarks[i];
-    link.textContent = bookmarks[i];
-
-
-    const deleteButton = document.createElement("button");
-    deleteButton.textContent = "X";
-    deleteButton.classList.add("delete");
-
-    deleteButton.addEventListener("click", () => {
-      bookmarks.splice(i, 1);
-      addBookmarksToHtml();
-    });
-
-    item.append(link, deleteButton);
-    list.appendChild(item);
-  }
+  list.innerHTML = createBookmarksMarkup(bookmarks);
 };
 
 const addBookmarks = () => {
@@ -38,6 +28,17 @@ const addBookmarks = () => {
   }
   bookmarks.push(url);
   addBookmarksToHtml();
+  inputEl.value = "";
 };
 
 button.addEventListener("click", addBookmarks);
+
+list.addEventListener("click", event => {
+  if (!event.target.classList.contains("delete-btn")) {
+    return;
+  }
+  const item = event.target.parentElement;
+  const id = Number(item.dataset.id);
+  bookmarks.splice(id, 1);
+  addBookmarksToHtml();
+});
